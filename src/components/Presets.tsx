@@ -6,14 +6,18 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Plus, Trash2, Play } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Plus, Trash2, Play, Filter, Folder } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Badge } from './ui/badge';
+import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function Presets() {
   const { isDesktop } = useDevice();
-  const { presets, addPreset, removePreset, addTimer, settings } = useTimer();
+  const { presets, groups, addPreset, removePreset, addTimer, settings } = useTimer();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [newPreset, setNewPreset] = useState({
     name: '',
     minutes: 5,
@@ -69,6 +73,15 @@ export function Presets() {
 
   const freeLimit = 3;
   const canAddMore = presets.length < freeLimit;
+
+  // Filter presets by group
+  const filteredPresets = selectedGroup === 'all' 
+    ? presets 
+    : selectedGroup === 'none'
+    ? presets.filter(p => !p.group)
+    : presets.filter(p => p.group === selectedGroup);
+
+  const ungroupedCount = presets.filter(p => !p.group).length;
 
   return (
     <div className="p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
@@ -154,12 +167,25 @@ export function Presets() {
 
               <div>
                 <Label htmlFor="preset-group">Gruppo (opzionale)</Label>
-                <Input
-                  id="preset-group"
+                <Select
                   value={newPreset.group}
-                  onChange={(e) => setNewPreset({ ...newPreset, group: e.target.value })}
-                  placeholder="Es. Scuola, Lavoro"
-                />
+                  onValueChange={(value) => setNewPreset({ ...newPreset, group: value === 'none' ? '' : value })}
+                >
+                  <SelectTrigger className="bg-gray-900 border-gray-700">
+                    <SelectValue placeholder="Seleziona gruppo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectItem value="none">Nessun gruppo</SelectItem>
+                    {groups.map(group => (
+                      <SelectItem key={group.id} value={group.id}>
+                        <span className="flex items-center gap-2">
+                          <span>{group.icon}</span>
+                          <span>{group.name}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <Button onClick={handleCreatePreset} className="w-full">
@@ -179,45 +205,65 @@ export function Presets() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-        {presets.map(preset => (
-          <Card key={preset.id} className="p-3 md:p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <h3 className="font-medium mb-1">{preset.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {Math.floor(preset.seconds / 60)} minuti
-                </p>
-                {preset.group && (
-                  <Badge variant="outline" className="mt-2">
-                    {preset.group}
-                  </Badge>
-                )}
-              </div>
-              <div
-                className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-700"
-                style={{ backgroundColor: preset.color }}
-              />
-            </div>
+        <AnimatePresence mode="popLayout">
+          {filteredPresets.map(preset => {
+            const group = preset.group ? groups.find(g => g.id === preset.group) : null;
+            return (
+              <motion.div
+                key={preset.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <Card className="p-3 md:p-4 border-2" style={{ borderColor: group ? `${group.color}40` : undefined }}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-medium mb-1">{preset.name}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {Math.floor(preset.seconds / 60)} minuti
+                      </p>
+                      {group && (
+                        <Badge variant="outline" className="mt-2" style={{ borderColor: group.color, color: group.color }}>
+                          <span className="mr-1">{group.icon}</span>
+                          {group.name}
+                        </Badge>
+                      )}
+                    </div>
+                    <div
+                      className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-700"
+                      style={{ backgroundColor: preset.color }}
+                    />
+                  </div>
 
-            <div className="flex gap-2">
-              <Button
-                className="flex-1"
-                onClick={() => handleStartPreset(preset)}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Avvia
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => removePreset(preset.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </Card>
-        ))}
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1"
+                      onClick={() => handleStartPreset(preset)}
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Avvia
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removePreset(preset.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
+
+      {filteredPresets.length === 0 && presets.length > 0 && (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <p>Nessun preset in questo gruppo.</p>
+        </div>
+      )}
 
       {presets.length === 0 && (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">

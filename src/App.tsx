@@ -3,18 +3,21 @@ import { Home } from './components/Home';
 import { Presets } from './components/Presets';
 import { Routines } from './components/Routines';
 import { Settings } from './components/Settings';
+import { GroupManager } from './components/GroupManager';
 import { TimerProvider } from './components/TimerContext';
 import { WatchView } from './components/WatchView';
 import { DesktopLayout } from './components/DesktopLayout';
 import { SplashScreen } from './components/SplashScreen';
 import { useDevice } from './components/hooks/useDevice';
-import { Home as HomeIcon, Clock, List, Settings as SettingsIcon } from 'lucide-react';
+import { useTranslations } from './components/i18n';
+import { Home as HomeIcon, Clock, List, Settings as SettingsIcon, Folder } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [showSplash, setShowSplash] = useState(true);
   const { deviceType, isWatch, isDesktop } = useDevice();
+  const { t } = useTranslations();
 
   // Force dark mode
   useEffect(() => {
@@ -40,11 +43,12 @@ export default function App() {
               {activeTab === 'home' && <Home />}
               {activeTab === 'presets' && <Presets />}
               {activeTab === 'routines' && <Routines />}
+              {activeTab === 'groups' && <GroupManager />}
               {activeTab === 'settings' && <Settings />}
             </div>
             
             {/* Bottom Navigation - Always Visible */}
-            <nav className="fixed bottom-0 left-0 right-0 h-20 border-t-2 border-orange-500/30 bg-gradient-to-t from-black via-black to-gray-900 backdrop-blur-xl grid grid-cols-4 z-50 shadow-2xl shadow-orange-500/10">
+            <nav className="fixed bottom-0 left-0 right-0 h-20 border-t-2 border-orange-500/30 bg-gradient-to-t from-black via-black to-gray-900 backdrop-blur-xl grid grid-cols-5 z-50 shadow-2xl shadow-orange-500/10">
               <button
                 onClick={() => setActiveTab('home')}
                 className={`flex flex-col items-center justify-center gap-1 py-2 transition-all relative ${
@@ -62,7 +66,7 @@ export default function App() {
                   className="text-[11px] font-medium transition-all" 
                   style={{ color: activeTab === 'home' ? '#F97316' : '#999' }}
                 >
-                  Home
+                  {t.home}
                 </span>
                 {activeTab === 'home' && (
                   <motion.div 
@@ -89,7 +93,7 @@ export default function App() {
                   className="text-[11px] font-medium transition-all" 
                   style={{ color: activeTab === 'presets' ? '#EF4444' : '#999' }}
                 >
-                  Preset
+                  {t.presets}
                 </span>
                 {activeTab === 'presets' && (
                   <motion.div 
@@ -116,12 +120,39 @@ export default function App() {
                   className="text-[11px] font-medium transition-all" 
                   style={{ color: activeTab === 'routines' ? '#3B82F6' : '#999' }}
                 >
-                  Routine
+                  {t.routines}
                 </span>
                 {activeTab === 'routines' && (
                   <motion.div 
                     layoutId="mobileActiveTab"
                     className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-b-full"
+                  />
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('groups')}
+                className={`flex flex-col items-center justify-center gap-1 py-2 transition-all relative ${
+                  activeTab === 'groups' ? 'bg-purple-500/10' : ''
+                }`}
+              >
+                <Folder 
+                  className="w-6 h-6 transition-all" 
+                  style={{ 
+                    color: activeTab === 'groups' ? '#A855F7' : '#999',
+                    filter: activeTab === 'groups' ? 'drop-shadow(0 0 8px rgba(168, 85, 247, 0.6))' : 'none'
+                  }} 
+                />
+                <span 
+                  className="text-[11px] font-medium transition-all" 
+                  style={{ color: activeTab === 'groups' ? '#A855F7' : '#999' }}
+                >
+                  {t.groups}
+                </span>
+                {activeTab === 'groups' && (
+                  <motion.div 
+                    layoutId="mobileActiveTab"
+                    className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-b-full"
                   />
                 )}
               </button>
@@ -143,7 +174,7 @@ export default function App() {
                   className="text-[11px] font-medium transition-all" 
                   style={{ color: activeTab === 'settings' ? '#D1D5DB' : '#999' }}
                 >
-                  Settings
+                  {t.settings}
                 </span>
                 {activeTab === 'settings' && (
                   <motion.div 

@@ -6,16 +6,20 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Plus, Trash2, Play, ChevronRight, Edit } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Plus, Trash2, Play, ChevronRight, Edit, Filter, Folder } from 'lucide-react';
 import { Switch } from './ui/switch';
 import { Badge } from './ui/badge';
+import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { motion, AnimatePresence } from 'motion/react';
 import { RoutineRunner } from './RoutineRunner';
 
 export function Routines() {
   const { isDesktop } = useDevice();
-  const { routines, addRoutine, removeRoutine } = useTimer();
+  const { routines, groups, addRoutine, removeRoutine } = useTimer();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeRoutine, setActiveRoutine] = useState<Routine | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [newRoutine, setNewRoutine] = useState({
     name: '',
     steps: [] as RoutineStep[],
@@ -89,6 +93,15 @@ export function Routines() {
     { name: 'Viola', value: '#A855F7' },
   ];
 
+  // Filter routines by group
+  const filteredRoutines = selectedGroup === 'all' 
+    ? routines 
+    : selectedGroup === 'none'
+    ? routines.filter(r => !r.group)
+    : routines.filter(r => r.group === selectedGroup);
+
+  const ungroupedCount = routines.filter(r => !r.group).length;
+
   if (activeRoutine) {
     return (
       <RoutineRunner
@@ -133,12 +146,25 @@ export function Routines() {
 
               <div>
                 <Label htmlFor="routine-group">Gruppo (opzionale)</Label>
-                <Input
-                  id="routine-group"
+                <Select
                   value={newRoutine.group}
-                  onChange={(e) => setNewRoutine({ ...newRoutine, group: e.target.value })}
-                  placeholder="Es. Mattina, Studio"
-                />
+                  onValueChange={(value) => setNewRoutine({ ...newRoutine, group: value === 'none' ? '' : value })}
+                >
+                  <SelectTrigger className="bg-gray-900 border-gray-700">
+                    <SelectValue placeholder="Seleziona gruppo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectItem value="none">Nessun gruppo</SelectItem>
+                    {groups.map(group => (
+                      <SelectItem key={group.id} value={group.id}>
+                        <span className="flex items-center gap-2">
+                          <span>{group.icon}</span>
+                          <span>{group.name}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex items-center justify-between">
@@ -253,23 +279,67 @@ export function Routines() {
         </Dialog>
       </div>
 
+      {/* Group Filter */}
+      {groups.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <span className="text-sm text-gray-400">Filtra per gruppo</span>
+          </div>
+          <Tabs value={selectedGroup} onValueChange={setSelectedGroup} className="w-full">
+            <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-gray-900 border border-gray-800">
+              <TabsTrigger value="all" className="whitespace-nowrap">
+                Tutte ({routines.length})
+              </TabsTrigger>
+              {groups.map(group => {
+                const count = routines.filter(r => r.group === group.id).length;
+                return (
+                  <TabsTrigger key={group.id} value={group.id} className="whitespace-nowrap">
+                    <span className="mr-2">{group.icon}</span>
+                    {group.name} ({count})
+                  </TabsTrigger>
+                );
+              })}
+              {ungroupedCount > 0 && (
+                <TabsTrigger value="none" className="whitespace-nowrap">
+                  <Folder className="w-3 h-3 mr-2" />
+                  Senza gruppo ({ungroupedCount})
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-        {routines.map(routine => {
-          const totalMinutes = routine.steps.reduce((sum, step) => sum + step.seconds, 0) / 60;
-          
-          return (
-            <Card key={routine.id} className="p-4">
+        <AnimatePresence mode="popLayout">
+          {filteredRoutines.map(routine => {
+            const totalMinutes = routine.steps.reduce((sum, step) => sum + step.seconds, 0) / 60;
+            const group = routine.group ? groups.find(g => g.id === routine.group) : null;
+            
+            return (
+              <motion.div
+                key={routine.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <Card className="p-4 border-2" style={{ borderColor: group ? `${group.color}40` : undefined }}>
               <div className="mb-3">
                 <div className="flex items-start justify-between mb-2">
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-medium">{routine.name}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       {routine.steps.length} step • {Math.floor(totalMinutes)} min totali
                     </p>
+                    {group && (
+                      <Badge variant="outline" className="mt-2" style={{ borderColor: group.color, color: group.color }}>
+                        <span className="mr-1">{group.icon}</span>
+                        {group.name}
+                      </Badge>
+                    )}
                   </div>
-                  {routine.group && (
-                    <Badge variant="outline">{routine.group}</Badge>
-                  )}
                 </div>
 
                 <div className="flex gap-1 mt-3">
@@ -303,10 +373,18 @@ export function Routines() {
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
-            </Card>
-          );
-        })}
+                </Card>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
+
+      {filteredRoutines.length === 0 && routines.length > 0 && (
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <p>Nessuna routine in questo gruppo.</p>
+        </div>
+      )}
 
       {routines.length === 0 && (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">

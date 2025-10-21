@@ -40,6 +40,13 @@ export interface Routine {
   group?: string;
 }
 
+export interface Group {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+}
+
 export interface AppSettings {
   defaultColor: string;
   defaultSound: boolean;
@@ -47,12 +54,14 @@ export interface AppSettings {
   reduceMotion: boolean;
   keepScreenActive: boolean;
   theme: 'light' | 'dark' | 'auto';
+  selectedSoundId: string;
 }
 
 interface TimerContextType {
   timers: Timer[];
   presets: Preset[];
   routines: Routine[];
+  groups: Group[];
   settings: AppSettings;
   addTimer: (timer: Omit<Timer, 'id'>) => void;
   removeTimer: (id: string) => void;
@@ -66,6 +75,9 @@ interface TimerContextType {
   addRoutine: (routine: Omit<Routine, 'id'>) => void;
   removeRoutine: (id: string) => void;
   updateRoutine: (id: string, updates: Partial<Routine>) => void;
+  addGroup: (group: Omit<Group, 'id'>) => void;
+  removeGroup: (id: string) => void;
+  updateGroup: (id: string, updates: Partial<Group>) => void;
   updateSettings: (updates: Partial<AppSettings>) => void;
 }
 
@@ -75,6 +87,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [timers, setTimers] = useState<Timer[]>([]);
   const [presets, setPresets] = useState<Preset[]>([]);
   const [routines, setRoutines] = useState<Routine[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [settings, setSettings] = useState<AppSettings>({
     defaultColor: '#F97316', // Orange-500
     defaultSound: true,
@@ -82,12 +95,14 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     reduceMotion: false,
     keepScreenActive: false,
     theme: 'auto',
+    selectedSoundId: 'bell-standard',
   });
 
   // Load from localStorage
   useEffect(() => {
     const savedPresets = localStorage.getItem('tempo-presets');
     const savedRoutines = localStorage.getItem('tempo-routines');
+    const savedGroups = localStorage.getItem('tempo-groups');
     const savedSettings = localStorage.getItem('tempo-settings');
 
     if (savedPresets) {
@@ -113,6 +128,22 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    if (savedGroups) {
+      try {
+        setGroups(JSON.parse(savedGroups));
+      } catch (e) {
+        console.error('Failed to load groups', e);
+      }
+    } else {
+      // Default groups
+      setGroups([
+        { id: '1', name: 'Scuola', color: '#3B82F6', icon: '🎓' },
+        { id: '2', name: 'Lavoro', color: '#F97316', icon: '💼' },
+        { id: '3', name: 'Sport', color: '#10B981', icon: '⚽' },
+        { id: '4', name: 'Terapia', color: '#A855F7', icon: '🧘' },
+      ]);
+    }
+
     if (savedSettings) {
       try {
         setSettings(JSON.parse(savedSettings));
@@ -130,6 +161,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem('tempo-routines', JSON.stringify(routines));
   }, [routines]);
+
+  useEffect(() => {
+    localStorage.setItem('tempo-groups', JSON.stringify(groups));
+  }, [groups]);
 
   useEffect(() => {
     localStorage.setItem('tempo-settings', JSON.stringify(settings));
@@ -183,20 +218,27 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     oscillator.stop(audioContext.currentTime + 0.1);
   };
 
-  const playCompletionSound = () => {
-    const audioContext = new AudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 523;
-    oscillator.type = 'sine';
-    gainNode.gain.value = 0.15;
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.3);
+  const playCompletionSound = async () => {
+    try {
+      // Dynamically import to avoid circular dependency
+      const { playSelectedSound } = await import('./SoundLibrary');
+      playSelectedSound(settings.selectedSoundId);
+    } catch (error) {
+      // Fallback to default sound
+      const audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 523;
+      oscillator.type = 'sine';
+      gainNode.gain.value = 0.15;
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
   };
 
   const addTimer = (timer: Omit<Timer, 'id'>) => {
@@ -256,6 +298,22 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     setRoutines(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
   };
 
+  const addGroup = (group: Omit<Group, 'id'>) => {
+    const newGroup = { ...group, id: Date.now().toString() };
+    setGroups(prev => [...prev, newGroup]);
+  };
+
+  const removeGroup = (id: string) => {
+    setGroups(prev => prev.filter(g => g.id !== id));
+    // Remove group from presets and routines
+    setPresets(prev => prev.map(p => p.group === id ? { ...p, group: undefined } : p));
+    setRoutines(prev => prev.map(r => r.group === id ? { ...r, group: undefined } : r));
+  };
+
+  const updateGroup = (id: string, updates: Partial<Group>) => {
+    setGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
+  };
+
   const updateSettings = (updates: Partial<AppSettings>) => {
     setSettings(prev => ({ ...prev, ...updates }));
   };
@@ -266,6 +324,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         timers,
         presets,
         routines,
+        groups,
         settings,
         addTimer,
         removeTimer,
@@ -279,6 +338,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         addRoutine,
         removeRoutine,
         updateRoutine,
+        addGroup,
+        removeGroup,
+        updateGroup,
         updateSettings,
       }}
     >

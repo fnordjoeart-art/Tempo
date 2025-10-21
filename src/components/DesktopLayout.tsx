@@ -3,11 +3,12 @@ import { Home } from './Home';
 import { Presets } from './Presets';
 import { Routines } from './Routines';
 import { Settings } from './Settings';
+import { GroupManager } from './GroupManager';
 import { Button } from './ui/button';
-import { Home as HomeIcon, Clock, List, Settings as SettingsIcon, Menu } from 'lucide-react';
+import { Home as HomeIcon, Clock, List, Settings as SettingsIcon, Menu, Folder } from 'lucide-react';
 import { cn } from './ui/utils';
 
-type View = 'home' | 'presets' | 'routines' | 'settings';
+type View = 'home' | 'presets' | 'routines' | 'groups' | 'settings';
 
 export function DesktopLayout() {
   const [activeView, setActiveView] = useState<View>('home');
@@ -17,6 +18,7 @@ export function DesktopLayout() {
     { id: 'home' as View, label: 'Home', icon: HomeIcon },
     { id: 'presets' as View, label: 'Preset', icon: Clock },
     { id: 'routines' as View, label: 'Routine', icon: List },
+    { id: 'groups' as View, label: 'Gruppi', icon: Folder },
     { id: 'settings' as View, label: 'Impostazioni', icon: SettingsIcon },
   ];
 
@@ -84,6 +86,7 @@ export function DesktopLayout() {
           {activeView === 'home' && <Home />}
           {activeView === 'presets' && <Presets />}
           {activeView === 'routines' && <Routines />}
+          {activeView === 'groups' && <GroupManager />}
           {activeView === 'settings' && <Settings />}
         </div>
       </main>

@@ -1,15 +1,22 @@
+import { useState } from 'react';
 import { useTimer } from './TimerContext';
 import { useDevice } from './hooks/useDevice';
+import { useTranslations } from './i18n';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { Badge } from './ui/badge';
-import { Volume2, Vibrate, Moon, Zap, Cloud, Lock, Crown, Smartphone, Tablet, Monitor, Watch } from 'lucide-react';
+import { Button } from './ui/button';
+import { SoundLibrary } from './SoundLibrary';
+import { Privacy } from './Privacy';
+import { Volume2, Vibrate, Moon, Zap, Cloud, Lock, Crown, Smartphone, Tablet, Monitor, Watch, Shield, ChevronRight } from 'lucide-react';
 
 export function Settings() {
   const { settings, updateSettings } = useTimer();
   const { deviceType, windowWidth, isDesktop } = useDevice();
+  const { t } = useTranslations();
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const getDeviceIcon = () => {
     switch (deviceType) {
@@ -22,6 +29,21 @@ export function Settings() {
   };
 
   const DeviceIcon = getDeviceIcon();
+
+  if (showPrivacy) {
+    return (
+      <div className="relative">
+        <Button
+          onClick={() => setShowPrivacy(false)}
+          variant="ghost"
+          className="absolute top-4 left-4 z-10 text-orange-500 hover:text-orange-400"
+        >
+          ← Indietro
+        </Button>
+        <Privacy />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
@@ -84,6 +106,16 @@ export function Settings() {
                 id="default-vibration"
                 checked={settings.defaultVibration}
                 onCheckedChange={(checked) => updateSettings({ defaultVibration: checked })}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Sound Library */}
+            <div className="pt-2">
+              <SoundLibrary
+                selectedSound={settings.selectedSoundId}
+                onSelectSound={(soundId) => updateSettings({ selectedSoundId: soundId })}
               />
             </div>
           </div>
@@ -220,9 +252,29 @@ export function Settings() {
             <p>
               <strong>Sincronizzazione opzionale:</strong> La sincronizzazione multi-dispositivo richiede Premium ed è completamente opt-in.
             </p>
+            
             <Separator />
+            
+            {/* Privacy Policy Button */}
+            <Button
+              onClick={() => setShowPrivacy(true)}
+              variant="outline"
+              className="w-full justify-between bg-orange-500/10 border-orange-500/30 hover:bg-orange-500/20 text-orange-500"
+            >
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                <span>{t.privacyPolicy}</span>
+              </div>
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+            
+            <Separator />
+            
             <p className="text-xs">
               Versione 1.0.0 • TEMPO+ Visual Timer
+            </p>
+            <p className="text-xs">
+              © 2024 Play Serious S.r.l.
             </p>
           </div>
         </Card>

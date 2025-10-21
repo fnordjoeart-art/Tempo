@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslations } from './i18n';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -7,6 +8,7 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onComplete }: SplashScreenProps) {
   const [progress, setProgress] = useState(100);
+  const { t } = useTranslations();
 
   useEffect(() => {
     // Countdown animation
@@ -52,27 +54,16 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
 
         {/* Competition chronograph */}
         <div className="relative">
-          {/* Outer glow rings */}
+          {/* Single outer glow ring */}
           <motion.div
-            className="absolute inset-0"
+            className="absolute inset-0 flex items-center justify-center"
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 0, 0.5],
+              scale: [1, 1.25, 1],
+              opacity: [0.4, 0, 0.4],
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="w-80 h-80 rounded-full border-2 border-orange-500/30" />
-          </motion.div>
-
-          <motion.div
-            className="absolute inset-0"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0, 0.3],
-            }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          >
-            <div className="w-80 h-80 rounded-full border-2 border-red-500/20" />
+            <div className="w-80 h-80 rounded-full border-2 border-orange-500/40" />
           </motion.div>
 
           {/* Main chronograph circle */}
@@ -142,19 +133,17 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             </defs>
 
             {/* Center text */}
-            <motion.text
+            <text
               x="160"
               y="145"
               textAnchor="middle"
               className="fill-white"
               style={{ fontSize: '56px', fontWeight: 'bold' }}
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
             >
               TEMPO
-            </motion.text>
+            </text>
 
-            <motion.text
+            <text
               x="160"
               y="180"
               textAnchor="middle"
@@ -162,7 +151,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               style={{ fontSize: '32px', fontWeight: 'bold', letterSpacing: '8px' }}
             >
               +
-            </motion.text>
+            </text>
           </svg>
 
           {/* Rotating competition dial indicator */}
@@ -195,7 +184,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           animate={{ opacity: [0, 1, 1, 0] }}
           transition={{ duration: 2, times: [0, 0.3, 0.7, 1] }}
         >
-          LOADING
+          {t.loading}
         </motion.p>
       </motion.div>
     </AnimatePresence>
