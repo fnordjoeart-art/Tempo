@@ -7,18 +7,41 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Card } from './ui/card';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { ICON_MAP, IconKey, GroupIcon } from './GroupIcon';
 
 export function GroupManager() {
   const { groups, addGroup, removeGroup, updateGroup, presets, routines } = useTimer();
   const [showDialog, setShowDialog] = useState(false);
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    color: string;
+    icon: IconKey;
+  }>({
     name: '',
     color: '#F97316',
-    icon: '📁',
+    icon: 'folder',
   });
 
-  const icons = ['📁', '🎓', '💼', '⚽', '🧘', '🎨', '🍳', '📚', '🎵', '🏃', '💻', '🌟'];
+  const iconOptions: { key: IconKey; label: string }[] = [
+    { key: 'folder', label: 'Cartella' },
+    { key: 'graduation', label: 'Scuola' },
+    { key: 'briefcase', label: 'Lavoro' },
+    { key: 'dumbbell', label: 'Sport' },
+    { key: 'flower', label: 'Relax' },
+    { key: 'palette', label: 'Arte' },
+    { key: 'utensils', label: 'Cucina' },
+    { key: 'book', label: 'Studio' },
+    { key: 'music', label: 'Musica' },
+    { key: 'activity', label: 'Fitness' },
+    { key: 'laptop', label: 'Tech' },
+    { key: 'star', label: 'Speciale' },
+    { key: 'heart', label: 'Salute' },
+    { key: 'coffee', label: 'Pausa' },
+    { key: 'home', label: 'Casa' },
+    { key: 'zap', label: 'Energia' },
+    { key: 'target', label: 'Obiettivi' },
+  ];
   const colors = [
     { name: 'Arancione', value: '#F97316' },
     { name: 'Rosso', value: '#EF4444' },
@@ -37,7 +60,7 @@ export function GroupManager() {
         setFormData({
           name: group.name,
           color: group.color,
-          icon: group.icon || '📁',
+          icon: (group.icon as IconKey) || 'folder',
         });
         setEditingGroup(groupId);
       }
@@ -45,7 +68,7 @@ export function GroupManager() {
       setFormData({
         name: '',
         color: '#F97316',
-        icon: '📁',
+        icon: 'folder',
       });
       setEditingGroup(null);
     }
@@ -60,7 +83,7 @@ export function GroupManager() {
         addGroup(formData);
       }
       setShowDialog(false);
-      setFormData({ name: '', color: '#F97316', icon: '📁' });
+      setFormData({ name: '', color: '#F97316', icon: 'folder' });
       setEditingGroup(null);
     }
   };
@@ -105,10 +128,10 @@ export function GroupManager() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${group.color}20` }}
                     >
-                      {group.icon}
+                      <GroupIcon icon={group.icon} className="w-6 h-6" color={group.color} />
                     </div>
                     <div>
                       <h3 className="font-medium">{group.name}</h3>
@@ -186,21 +209,28 @@ export function GroupManager() {
             <div>
               <Label>Icona</Label>
               <div className="grid grid-cols-6 gap-2 mt-2">
-                {icons.map(icon => (
-                  <motion.button
-                    key={icon}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2 transition-all ${
-                      formData.icon === icon
-                        ? 'border-white bg-gray-800'
-                        : 'border-gray-700 hover:border-gray-600'
-                    }`}
-                    onClick={() => setFormData({ ...formData, icon })}
-                  >
-                    {icon}
-                  </motion.button>
-                ))}
+                {iconOptions.map(({ key, label }) => {
+                  const IconComponent = ICON_MAP[key];
+                  return (
+                    <motion.button
+                      key={key}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 transition-all ${
+                        formData.icon === key
+                          ? 'border-white bg-gray-800'
+                          : 'border-gray-700 hover:border-gray-600'
+                      }`}
+                      onClick={() => setFormData({ ...formData, icon: key })}
+                      title={label}
+                    >
+                      <IconComponent 
+                        className="w-5 h-5" 
+                        style={{ color: formData.icon === key ? formData.color : '#9CA3AF' }}
+                      />
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
 

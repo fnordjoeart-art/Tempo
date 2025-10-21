@@ -137,10 +137,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     } else {
       // Default groups
       setGroups([
-        { id: '1', name: 'Scuola', color: '#3B82F6', icon: '🎓' },
-        { id: '2', name: 'Lavoro', color: '#F97316', icon: '💼' },
-        { id: '3', name: 'Sport', color: '#10B981', icon: '⚽' },
-        { id: '4', name: 'Terapia', color: '#A855F7', icon: '🧘' },
+        { id: '1', name: 'Scuola', color: '#3B82F6', icon: 'graduation' },
+        { id: '2', name: 'Lavoro', color: '#F97316', icon: 'briefcase' },
+        { id: '3', name: 'Sport', color: '#10B981', icon: 'dumbbell' },
+        { id: '4', name: 'Terapia', color: '#A855F7', icon: 'flower' },
       ]);
     }
 

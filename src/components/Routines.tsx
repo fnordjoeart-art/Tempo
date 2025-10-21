@@ -13,6 +13,7 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
 import { motion, AnimatePresence } from 'motion/react';
 import { RoutineRunner } from './RoutineRunner';
+import { GroupIcon } from './GroupIcon';
 
 export function Routines() {
   const { isDesktop } = useDevice();
@@ -158,7 +159,7 @@ export function Routines() {
                     {groups.map(group => (
                       <SelectItem key={group.id} value={group.id}>
                         <span className="flex items-center gap-2">
-                          <span>{group.icon}</span>
+                          <GroupIcon icon={group.icon} className="w-4 h-4" color={group.color} />
                           <span>{group.name}</span>
                         </span>
                       </SelectItem>
@@ -295,7 +296,7 @@ export function Routines() {
                 const count = routines.filter(r => r.group === group.id).length;
                 return (
                   <TabsTrigger key={group.id} value={group.id} className="whitespace-nowrap">
-                    <span className="mr-2">{group.icon}</span>
+                    <GroupIcon icon={group.icon} className="w-4 h-4 mr-2" color={group.color} />
                     {group.name} ({count})
                   </TabsTrigger>
                 );
@@ -335,7 +336,7 @@ export function Routines() {
                     </p>
                     {group && (
                       <Badge variant="outline" className="mt-2" style={{ borderColor: group.color, color: group.color }}>
-                        <span className="mr-1">{group.icon}</span>
+                        <GroupIcon icon={group.icon} className="w-3 h-3 mr-1" />
                         {group.name}
                       </Badge>
                     )}
