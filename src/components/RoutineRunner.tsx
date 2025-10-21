@@ -190,9 +190,8 @@ export function RoutineRunner({ routine, onClose }: RoutineRunnerProps) {
                   reduceMotion={settings.reduceMotion}
                 />
                 
-                {/* Chronograph display for routine step */}
+                {/* Chronograph centiseconds display */}
                 <ChronographDisplay
-                  remainingSeconds={remainingSeconds}
                   isRunning={isRunning && !isPaused}
                   color={currentStep.color}
                   size={isDesktop ? 'lg' : isTablet ? 'md' : 'sm'}

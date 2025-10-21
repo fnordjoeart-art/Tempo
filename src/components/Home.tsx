@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useTimer } from './TimerContext';
 import { VisualTimerDisk } from './VisualTimerDisk';
 import { ChronographDisplay } from './ChronographDisplay';
+import { MultiTimerView } from './MultiTimerView';
 import { Button } from './ui/button';
-import { Play, Pause, RotateCcw, Plus } from 'lucide-react';
+import { Play, Pause, RotateCcw, Plus, Grid3x3 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useDevice } from './hooks/useDevice';
 
@@ -12,8 +13,20 @@ export function Home() {
   const { isPhone, isTablet, isDesktop } = useDevice();
   const [currentTimerSeconds, setCurrentTimerSeconds] = useState(300); // 5 minutes default
   const [currentColor, setCurrentColor] = useState('#F97316'); // Orange-500
+  const [expandedTimerId, setExpandedTimerId] = useState<string | null>(null);
+  const [showMultiView, setShowMultiView] = useState(false);
   
   const mainTimer = timers[0];
+  const expandedTimer = expandedTimerId ? timers.find(t => t.id === expandedTimerId) : null;
+
+  // Auto-show multi view if more than 1 timer
+  useEffect(() => {
+    if (timers.length > 1 && !expandedTimerId) {
+      setShowMultiView(true);
+    } else if (timers.length <= 1) {
+      setShowMultiView(false);
+    }
+  }, [timers.length, expandedTimerId]);
 
   // Responsive disk size
   const getDiskSize = () => {
@@ -60,21 +73,7 @@ export function Home() {
     });
   };
 
-  const handlePlayPause = () => {
-    if (mainTimer) {
-      if (mainTimer.isRunning) {
-        pauseTimer(mainTimer.id);
-      } else {
-        startTimer(mainTimer.id);
-      }
-    }
-  };
 
-  const handleReset = () => {
-    if (mainTimer) {
-      resetTimer(mainTimer.id);
-    }
-  };
 
   const handleAddMinute = (minutes: number) => {
     setCurrentTimerSeconds(prev => Math.min(3600, prev + (minutes * 60)));
@@ -87,8 +86,31 @@ export function Home() {
     { name: 'Viola', value: '#A855F7' },
   ];
 
+  // Show multi-timer view if multiple timers exist
+  if (showMultiView && !expandedTimerId) {
+    return <MultiTimerView onExpandTimer={setExpandedTimerId} />;
+  }
+
+  // Show expanded single timer if selected from multi-view
+  const displayTimer = expandedTimer || mainTimer;
+
   return (
     <div className="min-h-screen p-4 md:p-8 lg:p-12 flex flex-col relative overflow-hidden pb-28">
+      {/* Back to Multi View Button */}
+      {expandedTimerId && timers.length > 1 && (
+        <div className="relative z-10 mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setExpandedTimerId(null)}
+            className="border-gray-700"
+          >
+            <Grid3x3 className="w-4 h-4 mr-2" />
+            Tutti i Timer ({timers.length})
+          </Button>
+        </div>
+      )}
+
       {/* Animated background gradient */}
       <div className="absolute inset-0 opacity-15 pointer-events-none">
         <motion.div
@@ -132,29 +154,35 @@ export function Home() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-start relative z-10 max-w-4xl mx-auto w-full">
-        {mainTimer ? (
+        {displayTimer ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, type: 'spring' }}
             className="flex flex-col items-center gap-4 md:gap-6 w-full"
           >
+            {/* Timer name if from multi-view */}
+            {expandedTimerId && (
+              <h2 className="text-xl md:text-2xl font-medium text-white">
+                {displayTimer.name}
+              </h2>
+            )}
+
             <div className="flex flex-col items-center gap-4">
               <VisualTimerDisk
-                totalSeconds={mainTimer.totalSeconds}
-                remainingSeconds={mainTimer.remainingSeconds}
-                color={mainTimer.color}
+                totalSeconds={displayTimer.totalSeconds}
+                remainingSeconds={displayTimer.remainingSeconds}
+                color={displayTimer.color}
                 size={getDiskSize()}
-                isRunning={mainTimer.isRunning && !mainTimer.isPaused}
+                isRunning={displayTimer.isRunning && !displayTimer.isPaused}
                 reduceMotion={settings.reduceMotion}
               />
               
-              {/* Additional chronograph display below disk */}
+              {/* Chronograph centiseconds display below disk */}
               <ChronographDisplay
-                remainingSeconds={mainTimer.remainingSeconds}
-                isRunning={mainTimer.isRunning && !mainTimer.isPaused}
-                color={mainTimer.color}
-                size={isDesktop ? 'lg' : isTablet ? 'md' : 'sm'}
+                isRunning={displayTimer.isRunning && !displayTimer.isPaused}
+                color={displayTimer.color}
+                size={isPhone ? 'sm' : isTablet ? 'md' : 'lg'}
               />
             </div>
 
@@ -163,13 +191,23 @@ export function Home() {
                 <Button
                   size={isDesktop ? 'lg' : 'default'}
                   variant="outline"
-                  className="w-14 h-14 md:w-20 md:h-20 rounded-full border-orange-500/50 hover:border-orange-500 hover:bg-orange-500/10 transition-all"
-                  onClick={handlePlayPause}
+                  className="w-14 h-14 md:w-20 md:h-20 rounded-full transition-all"
+                  style={{
+                    borderColor: `${displayTimer.color}80`,
+                    backgroundColor: displayTimer.isRunning && !displayTimer.isPaused ? `${displayTimer.color}20` : 'transparent',
+                  }}
+                  onClick={() => {
+                    if (displayTimer.isRunning) {
+                      pauseTimer(displayTimer.id);
+                    } else {
+                      startTimer(displayTimer.id);
+                    }
+                  }}
                 >
-                  {mainTimer.isRunning && !mainTimer.isPaused ? (
-                    <Pause className="w-5 h-5 md:w-7 md:h-7 text-orange-500" />
+                  {displayTimer.isRunning && !displayTimer.isPaused ? (
+                    <Pause className="w-5 h-5 md:w-7 md:h-7" style={{ color: displayTimer.color }} />
                   ) : (
-                    <Play className="w-5 h-5 md:w-7 md:h-7 text-orange-500" />
+                    <Play className="w-5 h-5 md:w-7 md:h-7" style={{ color: displayTimer.color }} />
                   )}
                 </Button>
               </motion.div>
@@ -179,7 +217,7 @@ export function Home() {
                   size={isDesktop ? 'lg' : 'default'}
                   variant="outline"
                   className="w-14 h-14 md:w-20 md:h-20 rounded-full border-red-500/50 hover:border-red-500 hover:bg-red-500/10 transition-all"
-                  onClick={handleReset}
+                  onClick={() => resetTimer(displayTimer.id)}
                 >
                   <RotateCcw className="w-5 h-5 md:w-7 md:h-7 text-red-500" />
                 </Button>

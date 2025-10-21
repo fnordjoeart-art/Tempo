@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 
 interface VisualTimerDiskProps {
   totalSeconds: number;
@@ -23,7 +23,6 @@ export function VisualTimerDisk({
   interactive = false,
 }: VisualTimerDiskProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [centiseconds, setCentiseconds] = useState(0);
   const diskRef = useRef<SVGSVGElement>(null);
 
   const percentage = totalSeconds > 0 ? (remainingSeconds / totalSeconds) : 0;
@@ -31,39 +30,17 @@ export function VisualTimerDisk({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage * circumference);
 
-  // Animate centiseconds for running timer
-  useEffect(() => {
-    if (!isRunning || reduceMotion) {
-      setCentiseconds(0);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setCentiseconds(prev => (prev + 1) % 100);
-    }, 10); // Update every 10ms for smooth animation
-
-    return () => clearInterval(interval);
-  }, [isRunning, reduceMotion]);
-
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
     
     if (hours > 0) {
-      return {
-        main: `${hours}:${mins.toString().padStart(2, '0')}`,
-        sub: secs.toString().padStart(2, '0'),
-      };
+      return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     
-    return {
-      main: `${mins}:${secs.toString().padStart(2, '0')}`,
-      sub: centiseconds.toString().padStart(2, '0'),
-    };
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-
-  const timeDisplay = formatTime(remainingSeconds);
 
   const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     if (!interactive) return;
@@ -215,67 +192,22 @@ export function VisualTimerDisk({
             }}
           />
 
-          {/* Center time display - Chronograph style */}
-          <g>
-            {/* Main time (hours:minutes or minutes:seconds) */}
-            <text
-              x={size / 2}
-              y={size / 2 - size * 0.04}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="fill-white select-none"
-              style={{ 
-                fontSize: size * 0.15,
-                fontWeight: 'bold',
-                letterSpacing: '0.05em',
-                filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))',
-              }}
-            >
-              {timeDisplay.main}
-            </text>
-
-            {/* Sub time (seconds or centiseconds) - Racing chronograph style */}
-            <AnimatePresence mode="wait">
-              <motion.text
-                key={timeDisplay.sub}
-                x={size / 2}
-                y={size / 2 + size * 0.08}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="select-none"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                transition={{ duration: 0.1 }}
-                style={{ 
-                  fontSize: size * 0.08,
-                  fontWeight: 'normal',
-                  letterSpacing: '0.1em',
-                  fill: color,
-                  filter: `drop-shadow(0 0 4px ${color}80)`,
-                }}
-              >
-                {timeDisplay.sub}
-              </motion.text>
-            </AnimatePresence>
-
-            {/* Label for sub time */}
-            <text
-              x={size / 2}
-              y={size / 2 + size * 0.15}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="fill-gray-400 select-none"
-              style={{ 
-                fontSize: size * 0.04,
-                fontWeight: 'normal',
-                letterSpacing: '0.2em',
-                opacity: 0.6,
-              }}
-            >
-              {remainingSeconds >= 3600 ? 'SEC' : 'MSEC'}
-            </text>
-          </g>
+          {/* Center time display - Simple */}
+          <text
+            x={size / 2}
+            y={size / 2}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="fill-white select-none"
+            style={{ 
+              fontSize: size * 0.15,
+              fontWeight: 'bold',
+              letterSpacing: '0.05em',
+              filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))',
+            }}
+          >
+            {formatTime(remainingSeconds)}
+          </text>
         </svg>
       </div>
     </div>

@@ -2,14 +2,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 interface ChronographDisplayProps {
-  remainingSeconds: number;
   isRunning: boolean;
   color: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
 export function ChronographDisplay({
-  remainingSeconds,
   isRunning,
   color,
   size = 'md',
@@ -24,88 +22,45 @@ export function ChronographDisplay({
 
     const interval = setInterval(() => {
       setCentiseconds(prev => (prev + 1) % 100);
-    }, 10);
+    }, 10); // Updates every 10ms = 100 times per second
 
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  const hours = Math.floor(remainingSeconds / 3600);
-  const mins = Math.floor((remainingSeconds % 3600) / 60);
-  const secs = remainingSeconds % 60;
-
   const sizes = {
-    sm: { main: 'text-2xl', sub: 'text-base', label: 'text-[10px]' },
-    md: { main: 'text-4xl', sub: 'text-xl', label: 'text-xs' },
-    lg: { main: 'text-6xl', sub: 'text-3xl', label: 'text-sm' },
+    sm: { sub: 'text-2xl', label: 'text-[9px]', line: 'w-8' },
+    md: { sub: 'text-5xl', label: 'text-xs', line: 'w-12' },
+    lg: { sub: 'text-7xl', label: 'text-sm', line: 'w-16' },
   };
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      {/* Main time display */}
-      <div className="flex items-baseline gap-1 tabular-nums">
-        {hours > 0 && (
-          <>
-            <motion.span
-              key={hours}
-              className={`${sizes[size].main} font-bold tracking-wider text-white`}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))' }}
-            >
-              {hours.toString().padStart(2, '0')}
-            </motion.span>
-            <span className={`${sizes[size].main} text-gray-500`}>:</span>
-          </>
-        )}
-        
-        <motion.span
-          key={mins}
-          className={`${sizes[size].main} font-bold tracking-wider text-white`}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))' }}
-        >
-          {mins.toString().padStart(2, '0')}
-        </motion.span>
-        
-        <span className={`${sizes[size].main} text-gray-500`}>:</span>
-        
-        <motion.span
-          key={secs}
-          className={`${sizes[size].main} font-bold tracking-wider text-white`}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))' }}
-        >
-          {secs.toString().padStart(2, '0')}
-        </motion.span>
-      </div>
-
-      {/* Centiseconds display - Racing style */}
+    <div className="flex flex-col items-center gap-2">
+      {/* Centiseconds display - Racing chronograph style */}
       <div className="flex items-center gap-2">
-        <div className="h-px w-8 bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
-        <AnimatePresence mode="wait">
+        <div className={`h-px ${sizes[size].line} bg-gradient-to-r from-transparent via-gray-700 to-transparent`} />
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={centiseconds}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.2 }}
-            transition={{ duration: 0.05 }}
-            className={`${sizes[size].sub} font-mono tracking-widest`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.08 }}
+            className={`${sizes[size].sub} font-mono tracking-[0.15em] tabular-nums`}
             style={{ 
               color: color,
-              filter: `drop-shadow(0 0 6px ${color}80)`,
+              filter: `drop-shadow(0 0 10px ${color}90)`,
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
             .{centiseconds.toString().padStart(2, '0')}
           </motion.div>
         </AnimatePresence>
-        <div className="h-px w-8 bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
+        <div className={`h-px ${sizes[size].line} bg-gradient-to-r from-transparent via-gray-700 to-transparent`} />
       </div>
 
       {/* Label */}
-      <p className={`${sizes[size].label} text-gray-500 tracking-widest uppercase mt-1`}>
-        Chronograph
+      <p className={`${sizes[size].label} text-gray-600 tracking-[0.3em] uppercase`}>
+        CENTISECONDS
       </p>
     </div>
   );
