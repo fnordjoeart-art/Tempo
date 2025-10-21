@@ -47,7 +47,7 @@ export function Settings() {
 
   return (
     <div className="p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
-      <div className="pt-4 md:pt-8 mb-6">
+      <div className="pt-12 md:pt-8 lg:pt-4 mb-6">
         <h1 className="text-xl md:text-2xl lg:text-3xl mb-2">Impostazioni</h1>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
           Personalizza la tua esperienza

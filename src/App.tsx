@@ -11,7 +11,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { useDevice } from './components/hooks/useDevice';
 import { useTranslations } from './components/i18n';
 import { Home as HomeIcon, Clock, List, Settings as SettingsIcon, Folder } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -26,7 +26,9 @@ export default function App() {
 
   return (
     <TimerProvider>
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <AnimatePresence mode="wait">
+        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      </AnimatePresence>
       
       <div className="min-h-screen bg-black text-white">
         {/* Apple Watch View */}

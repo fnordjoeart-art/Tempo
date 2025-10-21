@@ -1,0 +1,56 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#000000" />
+      <stop offset="100%" stop-color="#1a1a1a" />
+    </linearGradient>
+    
+    <linearGradient id="plusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="50%" stop-color="#F97316" />
+      <stop offset="100%" stop-color="#FB923C" />
+    </linearGradient>
+    
+    <!-- Radial glow -->
+    <radialGradient id="glowGradient">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bgGradient)"/>
+  
+  <!-- Glow effect -->
+  <circle cx="512" cy="512" r="400" fill="url(#glowGradient)" />
+  
+  <!-- TEMPO text -->
+  <text
+    x="512"
+    y="480"
+    text-anchor="middle"
+    fill="#FFFFFF"
+    font-size="180"
+    font-weight="bold"
+    letter-spacing="8"
+    font-family="system-ui, -apple-system, sans-serif"
+  >
+    TEMPO
+  </text>
+  
+  <!-- + symbol with gradient -->
+  <text
+    x="512"
+    y="650"
+    text-anchor="middle"
+    fill="url(#plusGradient)"
+    font-size="220"
+    font-weight="bold"
+    font-family="system-ui, -apple-system, sans-serif"
+  >
+    +
+  </text>
+  
+  <!-- Small decorative circle -->
+  <circle cx="512" cy="720" r="8" fill="#F97316" opacity="0.6" />
+</svg>

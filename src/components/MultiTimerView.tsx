@@ -77,7 +77,7 @@ export function MultiTimerView({ onExpandTimer }: MultiTimerViewProps) {
       </div>
 
       {/* Header */}
-      <div className="relative z-10 mb-6 pt-2">
+      <div className="relative z-10 mb-6 pt-12 md:pt-8 lg:pt-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl bg-gradient-to-r from-orange-500 via-red-500 to-blue-500 bg-clip-text text-transparent font-bold">

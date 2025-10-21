@@ -139,7 +139,7 @@ export function Home() {
         />
       </div>
 
-      <div className="text-center mb-4 md:mb-6 pt-2 md:pt-4 relative z-10">
+      <div className="text-center mb-4 md:mb-6 pt-12 md:pt-8 lg:pt-4 relative z-10">
         <motion.h1 
           className="text-xl md:text-3xl lg:text-4xl mb-1 bg-gradient-to-r from-orange-500 via-red-500 to-blue-500 bg-clip-text text-transparent font-bold"
           animate={{ 

@@ -15,8 +15,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Milano, Italia',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -88,8 +87,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Milan, Italy',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -161,8 +159,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Milán, Italia',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -234,8 +231,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Milan, Italie',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -307,8 +303,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Mailand, Italien',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -380,8 +375,7 @@ export function Privacy() {
       
       company: {
         name: 'Play Serious S.r.l.',
-        address: 'Via Esempio 123, Milão, Itália',
-        email: 'info@playserious.it',
+        email: 'tech@playserious.it',
         website: 'https://playserious.it',
       },
       
@@ -479,10 +473,7 @@ export function Privacy() {
             <div className="space-y-3 text-gray-300">
               <div className="flex items-center gap-3">
                 <Building2 className="w-5 h-5 text-gray-500" />
-                <div>
-                  <p>{currentContent.company.name}</p>
-                  <p className="text-sm text-gray-400">{currentContent.company.address}</p>
-                </div>
+                <p>{currentContent.company.name}</p>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-gray-500" />
