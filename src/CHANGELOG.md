@@ -1,8 +1,69 @@
 # 📝 TEMPO+ - Changelog
 
+## [1.0.7] - 2025-10-21
+
+### 🚨 FIX CRITICO: Build CSS Mancante
+
+#### Problema
+**Build di produzione mostrava sfondo BIANCO senza stili!**
+- ❌ `npm run build` → CSS NON incluso nel bundle
+- ❌ Tailwind v4 con `@import "tailwindcss"` non compatibile con build
+
+#### Soluzione
+**Tornato a Tailwind v3 standard (production-ready)**:
+
+1. ✅ **Creato `/postcss.config.js`**
+```js
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
+
+2. ✅ **Creato `/tailwind.config.ts`**
+```ts
+export default {
+  darkMode: ['class'],
+  content: ["./index.html", "./App.tsx", "./main.tsx", "./components/**/*.{js,ts,jsx,tsx}"],
+  theme: { extend: { colors: { ... } } }
+}
+```
+
+3. ✅ **Riscritto `/styles/globals.css`**
+```diff
+- @import "tailwindcss";           # v4 beta
+- @theme inline { ... }
++ @tailwind base;                  # v3 stable
++ @tailwind components;
++ @tailwind utilities;
++ @layer base { :root { ... } }
+```
+
+4. ✅ **Convertiti colori da OKLCH a HSL**
+```diff
+- --background: oklch(0.145 0 0);
++ --background: 0 0% 0%;
+```
+
+#### Risultato
+- ✅ Build include CSS correttamente
+- ✅ iOS app con sfondo NERO
+- ✅ Tutti gli stili Tailwind applicati
+
+**ADESSO RIFAI BUILD!**
+```bash
+npm run build
+npm run capacitor:sync
+npm run capacitor:ios
+```
+
+---
+
 ## [1.0.6] - 2025-10-21
 
-### 🎨 Fix Tailwind CSS v4 Import
+### 🎨 Fix Tailwind CSS v4 Import (OBSOLETO - vedi 1.0.7)
 
 #### Problema Risolto
 - ❌ Mancava `@import "tailwindcss"` in `/styles/globals.css`
