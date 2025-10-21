@@ -85,7 +85,7 @@ export function Presets() {
   const ungroupedCount = presets.filter(p => !p.group).length;
 
   return (
-    <div className="p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
       <div className="flex items-center justify-between mb-6 pt-12 md:pt-8 lg:pt-4">
         <div>
           <h1 className="text-xl md:text-2xl lg:text-3xl">Preset</h1>

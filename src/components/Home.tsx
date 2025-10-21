@@ -95,7 +95,7 @@ export function Home() {
   const displayTimer = expandedTimer || mainTimer;
 
   return (
-    <div className="min-h-screen p-4 md:p-8 lg:p-12 flex flex-col relative overflow-hidden pb-28">
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12 flex flex-col relative overflow-hidden pb-28">
       {/* Back to Multi View Button */}
       {expandedTimerId && timers.length > 1 && (
         <div className="relative z-10 mb-4">

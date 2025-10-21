@@ -113,11 +113,11 @@ export function Routines() {
   }
 
   return (
-    <div className="p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12 pb-24 lg:pb-12">
       <div className="flex items-center justify-between mb-6 pt-12 md:pt-8 lg:pt-4">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl">Routine</h1>
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-xl md:text-2xl lg:text-3xl text-white">Routine</h1>
+          <p className="text-xs md:text-sm text-gray-400 mt-1">
             Sequenze di timer automatici
           </p>
         </div>

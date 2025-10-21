@@ -1,5 +1,52 @@
 # 📝 TEMPO+ - Changelog
 
+## [1.0.6] - 2025-10-21
+
+### 🎨 Fix Tailwind CSS v4 Import
+
+#### Problema Risolto
+- ❌ Mancava `@import "tailwindcss"` in `/styles/globals.css`
+- ✅ Aggiunto import essenziale per Tailwind v4
+
+#### Cosa è Diverso
+Il progetto usa **Tailwind v4** (non v3):
+- ❌ NO `@tailwind base/components/utilities`
+- ✅ SI `@import "tailwindcss"`
+- ✅ Config inline con `@theme inline`
+- ✅ PostCSS automatico in Vite
+
+#### File Modificati
+- `/styles/globals.css` - Aggiunto `@import "tailwindcss"` in cima
+
+#### Documentazione
+- `/PROJECT-STRUCTURE.md` - Guida completa struttura progetto
+
+**Note**:
+- ✅ Progetto usa Capacitor (NO Ionic Framework)
+- ✅ Struttura root (NO src/ folder necessaria)
+- ✅ Tailwind v4 funziona diversamente da v3
+
+---
+
+## [1.0.5] - 2025-10-21
+
+### 🎨 Fix Background Nero
+
+#### Problema Risolto
+- ❌ Settings, Presets, Routines, Groups, Home avevano sfondo **BIANCO** invece di nero
+- ✅ Aggiunto `bg-black text-white` a tutti i componenti principali
+
+#### Componenti Fixati
+1. `/components/Settings.tsx` - Aggiunto `min-h-screen bg-black text-white`
+2. `/components/Home.tsx` - Aggiunto `bg-black text-white`
+3. `/components/Presets.tsx` - Aggiunto `min-h-screen bg-black text-white`
+4. `/components/Routines.tsx` - Aggiunto `min-h-screen bg-black text-white`
+5. `/components/GroupManager.tsx` - Aggiunto `min-h-screen bg-black text-white`
+
+**Ora TUTTE le pagine hanno sfondo nero corretto! ✅**
+
+---
+
 ## [1.0.4] - 2025-10-21
 
 ### 🎬 Splash Screen Semplificata
