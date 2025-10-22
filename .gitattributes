@@ -1,0 +1,4 @@
+src/styles/globals.css merge=ours
+src/tailwind.config.ts merge=ours
+src/postcss.config.js merge=ours
+package-lock.json merge=ours
