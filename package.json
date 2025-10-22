@@ -61,5 +61,8 @@
       "scripts": {
             "dev": "vite",
             "build": "vite build && node scripts/check-css.js"
+      },
+      "tailwind": {
+            "content": "[\"index.html\",\"src/**/*.{js,ts,jsx,tsx}\"]"
       }
 }
