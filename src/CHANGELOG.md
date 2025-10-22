@@ -1,8 +1,71 @@
 # 📝 TEMPO+ - Changelog
 
+## [1.0.8] - 2025-10-22
+
+### 🎯 FIX DEFINITIVO: Downgrade Tailwind v4 → v3
+
+**PROBLEMA REALE IDENTIFICATO E RISOLTO!**
+
+#### Problema Reale Identificato
+**MISMATCH VERSIONE TAILWIND!**
+```
+package.json:          "tailwindcss": "^4.0.0"  ← v4 BETA
+Configurazione files:  Tutti per v3 (postcss, config, css)
+
+Risultato:
+✅ npm run dev   → Funziona (Vite bypassa)
+❌ npm run build → CSS non generato
+❌ iOS App       → Sfondo BIANCO
+```
+
+#### Soluzione Definitiva
+**Downgrade a Tailwind v3 STABLE in `package.json`**:
+```diff
+- "tailwindcss": "^4.0.0"
++ "tailwindcss": "^3.4.1"
+```
+
+#### Workflow Completo
+
+**Online (Codespaces)**:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+git push
+```
+
+**Mac (Locale)**:
+```bash
+git pull
+rm -rf node_modules package-lock.json
+npm install
+npm run capacitor:sync
+npm run capacitor:ios
+```
+
+**IMPORTANTE**: DEVI cancellare `node_modules` e reinstallare!
+
+#### Files Coinvolti
+- ✅ `/package.json` → `tailwindcss: ^3.4.1`
+- ✅ `/postcss.config.js` → Config v3
+- ✅ `/tailwind.config.ts` → Config v3
+- ✅ `/styles/globals.css` → `@tailwind` directives v3
+
+#### Documentazione Creata
+- 📖 `/PROBLEMA-RISOLTO.md` - Riepilogo completo
+- 📖 `/FIX-INSTRUCTIONS.md` - Guida step-by-step
+- 📖 `/QUICK-FIX.md` - Comandi rapidi
+- 📖 `/REAL-PROBLEM-SOLVED.md` - Spiegazione tecnica
+- 📖 `/WHY-IT-WORKED-IN-DEV.md` - Dev vs Prod
+- 📖 `/DOCS-INDEX.md` - Indice navigazione
+- 📖 Aggiornati: `/README.md`, `/START-HERE.md`, `/CHANGELOG.md`
+
+---
+
 ## [1.0.7] - 2025-10-21
 
-### 🚨 FIX CRITICO: Build CSS Mancante
+### 🚨 FIX CRITICO: Build CSS Mancante (PARZIALE - vedi 1.0.8)
 
 #### Problema
 **Build di produzione mostrava sfondo BIANCO senza stili!**

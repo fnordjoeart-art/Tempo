@@ -1,6 +1,11 @@
 # ⏱️ TEMPO+ | Visual Timer Professionale
 
-> 🚀 **PRONTO PER APP STORE!** Leggi [FINAL-SUMMARY.md](/FINAL-SUMMARY.md) o [START-HERE.md](/START-HERE.md)
+> 🚨 **IMPORTANTE**: Se l'app mostra sfondo BIANCO invece di NERO:
+> 👉 Leggi **[/PROBLEMA-RISOLTO.md](/PROBLEMA-RISOLTO.md)** o **[/FIX-INSTRUCTIONS.md](/FIX-INSTRUCTIONS.md)**
+> 
+> ✅ **Fix v1.0.8 applicato**: Downgrade Tailwind v4→v3 per build produzione
+> 
+> 🚀 **Setup Iniziale**: Leggi [START-HERE.md](/START-HERE.md)
 > 
 > Logo disponibile in `/public/logo.svg` e `/public/app-icon.svg`
 

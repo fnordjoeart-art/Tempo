@@ -1,6 +1,27 @@
 # 🚀 TEMPO+ - INIZIA QUI
 
+> **⚠️ IMPORTANTE**: Se l'app mostra sfondo BIANCO invece di NERO, leggi **`/FIX-INSTRUCTIONS.md`** prima di procedere!
+
 > **Tempo stimato setup completo**: 1-2 ore (prima volta) | 30 minuti (con esperienza)
+
+---
+
+## 🚨 **FIX CRITICO APPLICATO** (v1.0.8)
+
+**Problema**: Build iOS mostrava sfondo BIANCO senza stili
+**Causa**: Tailwind v4 BETA nel package.json (incompatibile con build)
+**Soluzione**: Downgrade a Tailwind v3.4.1 stable
+
+### **Se hai già il progetto attivo**:
+👉 **Leggi `/FIX-INSTRUCTIONS.md`** per istruzioni dettagliate!
+
+In breve:
+```bash
+# Sia online che sul Mac
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
 
 ---
 
